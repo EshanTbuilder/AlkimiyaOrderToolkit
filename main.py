@@ -267,7 +267,7 @@ async def main():
         "expiry": "2024-06-15T12:19:43.663000+00:00",
         "pool_id": "b928cbe6-569b-4209-a421-53c624a9870a",
         "maker": "0xd01C9047f8918D1296C87024219a728Ec5Dd515b",
-        "taker": ACCOUNT,
+        "taker": "0x0000000000000000000000000000000000000000",
         "direction": "SHORT",
         "signature": "0xee565ea04f06fab92289e9f71a35a211ac8ce48cea6d592d7b1c1e76d599eadc35e0b3358810bba690ba9debe9d148e21e1c825ba877a76451ac6e2ad04c29d41b",
         "requested_long_shares": None,

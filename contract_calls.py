@@ -11,6 +11,9 @@ class OrderParamsConverter:
 
     @staticmethod
     def dict_to_tuple(order_params, pool_data):
+        shares_params_empty = (
+            0, 0, "0x0000000000000000000000000000000000000000", 0, 0, "0x0000000000000000000000000000000000000000"
+        )
         # Create hardcoded tuples for offered_long_shares_params and requested_long_shares_params
         offered_long_shares_params = (
             pool_data.floor,  # floor
@@ -41,7 +44,7 @@ class OrderParamsConverter:
                 int(order_params["requested_long_shares"], 0) or 0,
                 order_params.get("requested_upfront_token") or "0x0000000000000000000000000000000000000000",  # Default to zero address if None
                 int(order_params.get("requested_upfront_amount", 0) or 0) or 0,  # Default to 0 if None
-                requested_long_shares_params,
+                shares_params_empty,
                 0,  # Set requested_long_shares to 0 for SHORT direction
             )
         else:
@@ -57,9 +60,7 @@ class ContractCalls:
 
     def fill_order(self, order_data: dict, pool_data: dict) -> str:
         try:
-            signature = bytes.fromhex(order_data["signature"][2:])
             fraction = Web3.to_wei(order_data.get("fraction", 1), "ether")  # Ensure fraction is uint256
-            logger.info(f"signature: {signature}")
             logger.info(f"fraction: {fraction}")
             logger.info(json.dumps(order_data))
             
@@ -69,10 +70,10 @@ class ContractCalls:
             account = Account.from_key(self.private_key)
 
             signed_message = account.sign_message(message)
-            
             signature = signed_message.signature.hex()
+            signature = bytes.fromhex(order_data["signature"][2:]) # this did not work
+            logger.info(f"signature: {signature}")
             logger.info(order_tuple)
-            # import ipdb; ipdb.set_trace()
             txn = self.contract.functions.fillOrder(
                 order_tuple, signature, fraction
             ).build_transaction({
