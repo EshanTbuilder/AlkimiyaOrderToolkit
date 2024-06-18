@@ -8,6 +8,8 @@ from pools import PoolData
 from utils import shares_to_size_kb, size_kb_to_shares
 
 
+
+
 class Order:
     def __init__(
         self,
@@ -183,8 +185,26 @@ class Order:
         price_satPkb = price / size_kb
 
         return price_satPkb, size_kb
-
-    def from_price_and_size(self, price, size, pool_data):
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "order_hash": self.order_hash,
+            "expiry": self.expiry.isoformat() if self.expiry else None,
+            "pool_id": self.pool_id,
+            "maker": self.maker,
+            "direction": self.direction,
+            "signature": self.signature,
+            "requested_long_shares": str(self.requested_long_shares) if self.requested_long_shares is not None else None,
+            "offered_long_shares": str(self.offered_long_shares) if self.offered_long_shares is not None else None,
+            "offered_upfront_token": self.offered_upfront_token,
+            "requested_upfront_token": self.requested_upfront_token,
+            "requested_upfront_amount": str(self.requested_upfront_amount) if self.requested_upfront_amount is not None else None,
+            "offered_upfront_amount": str(self.offered_upfront_amount) if self.offered_upfront_amount is not None else None,
+            "fraction_filled": str(self.fraction_filled),
+        }
+    
+    def from_price_and_size(self, price: Decimal, size: Decimal, pool_data: PoolData):
         start = pool_data.target_start_timestamp
         end = pool_data.target_end_timestamp
 
@@ -198,3 +218,4 @@ class Order:
         elif self.direction == "SHORT":
             self.offered_long_shares = size_shares
             self.requested_upfront_amount = up_front_amount
+
